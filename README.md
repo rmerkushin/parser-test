@@ -13,5 +13,5 @@
 # Запуск
 
 ```shell
-python app.py > out.txt
+python parser.py > out.txt
 ```
