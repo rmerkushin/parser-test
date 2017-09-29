@@ -1,7 +1,9 @@
 import re
 import time
+import itertools
 from lxml.html import parse
 from collections import Counter
+from multiprocessing import Pool
 from lxml.html.clean import clean
 from urllib.request import urlopen
 
@@ -31,6 +33,7 @@ def get_page_words(url):
 
 
 with Timer():
+    pool = Pool()
     words = []
     main_page = parse(urlopen('https://www.socialquantum.com/')).getroot()
     links = main_page.xpath('//a')  # можно через iterlinks, но не так читаемо и менее надежно
@@ -38,7 +41,10 @@ with Timer():
     print('#### Обработанные ссылки ####\n')
     for url in urls:
         print(url)
-        words += get_page_words(url)
+    words = pool.map(get_page_words, urls)
+    pool.close()
+    pool.join()
+    words = list(itertools.chain(*words))
     unique_words = Counter(words)
     print('\n#### Уникальные слова ####\n')
     for word, count in unique_words.items():
